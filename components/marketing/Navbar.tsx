@@ -85,7 +85,7 @@ export default function Navbar() {
               className="flex items-center gap-2 text-lg font-bold tracking-tight text-white hover:text-white/90"
             >
               <Image
-                src="/logo.svg"
+                src={`${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/logo.svg`}
                 alt="UltraFit logo"
                 width={28}
                 height={28}

@@ -15,7 +15,10 @@ const nextConfig = isStaticExport
       assetPrefix: `${repoBasePath}/`,
       trailingSlash: true,
       images: { unoptimized: true },
+      // next/image does not auto-prefix string `src` with basePath, so expose it
+      // for manual prefixing of public assets (e.g. the navbar logo).
+      env: { NEXT_PUBLIC_BASE_PATH: repoBasePath },
     }
-  : {}
+  : { env: { NEXT_PUBLIC_BASE_PATH: '' } }
 
 export default nextConfig
