@@ -1,6 +1,14 @@
 "use client"
 
-import { BookOpenIcon, ZapIcon, ImageIcon, BarChart3Icon } from "lucide-react"
+import { useState } from "react"
+import {
+  BookOpenIcon,
+  ZapIcon,
+  ImageIcon,
+  BarChart3Icon,
+  MenuIcon,
+  XIcon,
+} from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 
@@ -73,6 +81,9 @@ const iconMap = {
 }
 
 export default function Navbar() {
+  const [mobileOpen, setMobileOpen] = useState(false)
+  const closeMobile = () => setMobileOpen(false)
+
   return (
     <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/10 bg-black/40 px-4 backdrop-blur-md md:px-6">
       <div className="flex h-16 items-center justify-between gap-4">
@@ -82,7 +93,7 @@ export default function Navbar() {
           <div className="flex items-center gap-6">
             <Link
               href="/"
-              className="flex items-center gap-2 text-lg font-bold tracking-tight text-white hover:text-white/90"
+              className="flex items-center gap-2 whitespace-nowrap text-lg font-bold tracking-tight text-white hover:text-white/90"
             >
               <Image
                 src={`${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/logo.svg`}
@@ -93,7 +104,9 @@ export default function Navbar() {
                 className="h-7 w-7"
               />
               UltraFit
-              <span className="font-normal text-white/60">for developers</span>
+              <span className="hidden font-normal text-white/60 sm:inline">
+                for developers
+              </span>
             </Link>
 
             <div className="max-md:hidden">
@@ -189,23 +202,90 @@ export default function Navbar() {
 
         {/* Right side */}
         <div className="flex items-center gap-2">
-          <Button
-            asChild
-            variant="ghost"
-            size="sm"
-            className="text-sm text-white/80 hover:bg-white/10 hover:text-white"
+          {/* Desktop CTAs */}
+          <div className="hidden items-center gap-2 md:flex">
+            <Button
+              asChild
+              variant="ghost"
+              size="sm"
+              className="text-sm text-white/80 hover:bg-white/10 hover:text-white"
+            >
+              <Link href="/login">Sign In</Link>
+            </Button>
+            <Button
+              asChild
+              size="sm"
+              className="bg-white text-sm font-semibold text-black hover:bg-white/90"
+            >
+              <Link href="/register">Get Started</Link>
+            </Button>
+          </div>
+
+          {/* Mobile menu toggle */}
+          <button
+            type="button"
+            aria-label="Toggle navigation menu"
+            aria-expanded={mobileOpen}
+            onClick={() => setMobileOpen((v) => !v)}
+            className="inline-flex h-9 w-9 items-center justify-center rounded-md text-white/80 transition-colors hover:bg-white/10 hover:text-white md:hidden"
           >
-            <Link href="/login">Sign In</Link>
-          </Button>
-          <Button
-            asChild
-            size="sm"
-            className="bg-white text-sm font-semibold text-black hover:bg-white/90"
-          >
-            <Link href="/register">Get Started</Link>
-          </Button>
+            {mobileOpen ? <XIcon size={20} /> : <MenuIcon size={20} />}
+          </button>
         </div>
       </div>
+
+      {/* Mobile menu panel */}
+      {mobileOpen && (
+        <nav className="max-h-[calc(100vh-4rem)] overflow-y-auto border-t border-white/10 bg-black/95 pb-4 backdrop-blur-md md:hidden">
+          {navigationLinks.map((link, index) =>
+            link.submenu ? (
+              <div key={index} className="py-1">
+                <p className="px-3 pb-1 pt-3 text-xs font-semibold uppercase tracking-wider text-white/40">
+                  {link.label}
+                </p>
+                {link.items.map((item, itemIndex) => (
+                  <a
+                    key={itemIndex}
+                    href={item.href}
+                    onClick={closeMobile}
+                    className="block rounded-md px-3 py-2 text-sm font-medium text-white/80 hover:bg-white/10 hover:text-white"
+                  >
+                    {item.label}
+                  </a>
+                ))}
+              </div>
+            ) : (
+              <a
+                key={index}
+                href={link.href}
+                onClick={closeMobile}
+                className="block rounded-md px-3 py-2.5 text-base font-medium text-white/90 hover:bg-white/10 hover:text-white"
+              >
+                {link.label}
+              </a>
+            )
+          )}
+
+          <div className="my-2 h-px bg-white/10" />
+
+          <div className="flex flex-col gap-2 px-1 pt-1">
+            <Link
+              href="/login"
+              onClick={closeMobile}
+              className="rounded-md px-3 py-2.5 text-center text-sm font-medium text-white/80 hover:bg-white/10 hover:text-white"
+            >
+              Sign In
+            </Link>
+            <Link
+              href="/register"
+              onClick={closeMobile}
+              className="rounded-md bg-white px-3 py-2.5 text-center text-sm font-semibold text-black hover:bg-white/90"
+            >
+              Get Started
+            </Link>
+          </div>
+        </nav>
+      )}
     </header>
   )
 }
