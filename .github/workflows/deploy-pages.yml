@@ -1,0 +1,66 @@
+name: Deploy static site to GitHub Pages
+
+# Publishes a STATIC preview of the marketing + docs pages only.
+# The API routes, middleware, auth, dashboard and admin are server-side and
+# cannot run on GitHub Pages, so they are stripped from a throwaway CI checkout
+# before the static export build. Your repository source is never modified.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow only one concurrent deployment.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Strip server-only code (static preview cannot run it)
+        run: |
+          rm -rf "app/api" "app/(auth)" "app/dashboard" "app/admin" "lib/supabase"
+          rm -f middleware.ts
+
+      - name: Build static export
+        env:
+          STATIC_EXPORT: 'true'
+        run: npm run build
+
+      - name: Disable Jekyll (so _next/ assets are served)
+        run: touch out/.nojekyll
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: out
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
