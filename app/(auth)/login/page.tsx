@@ -1,3 +1,5 @@
+import Auth8 from "@/components/ui/auth-08"
+
 export default function LoginPage() {
-  return <main><h1>Login</h1></main>
+  return <Auth8 mode="signin" />
 }

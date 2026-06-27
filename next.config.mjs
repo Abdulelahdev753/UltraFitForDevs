@@ -6,7 +6,7 @@
 const isStaticExport = process.env.STATIC_EXPORT === 'true'
 
 // GitHub Pages serves a project site under /<repo>/, so assets need this prefix.
-const repoBasePath = '/UltraFitForDevlopers'
+const repoBasePath = '/UltraFitForDevs'
 
 const nextConfig = isStaticExport
   ? {

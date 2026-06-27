@@ -1,3 +1,5 @@
+import Auth8 from "@/components/ui/auth-08"
+
 export default function RegisterPage() {
-  return <main><h1>Register</h1></main>
+  return <Auth8 mode="signup" />
 }
