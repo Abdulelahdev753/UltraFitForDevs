@@ -1,9 +1,10 @@
 name: Deploy static site to GitHub Pages
 
-# Publishes a STATIC preview of the marketing + docs pages only.
-# The API routes, middleware, auth, dashboard and admin are server-side and
-# cannot run on GitHub Pages, so they are stripped from a throwaway CI checkout
-# before the static export build. Your repository source is never modified.
+# Publishes a STATIC preview of the marketing, docs and auth UI pages.
+# The API routes, middleware, dashboard and admin are server-side and cannot
+# run on GitHub Pages, so they are stripped from a throwaway CI checkout before
+# the static export build. The auth (sign in / register) pages are pure UI, so
+# they are kept and render as static pages. Your repository source is never modified.
 
 on:
   push:
@@ -38,7 +39,7 @@ jobs:
 
       - name: Strip server-only code (static preview cannot run it)
         run: |
-          rm -rf "app/api" "app/(auth)" "app/dashboard" "app/admin" "lib/supabase"
+          rm -rf "app/api" "app/dashboard" "app/admin" "lib/supabase"
           rm -f middleware.ts
 
       - name: Build static export
